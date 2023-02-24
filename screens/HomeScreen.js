@@ -6,10 +6,15 @@ import Post from '../components/home/Post'
 import { POSTS } from '../data/posts'
 import BottomTabs from '../components/home/BottomTabs'
 import { bottomTabIcons } from '../components/home/BottomTabs'
-const HomeScreen = () => {
+
+
+const HomeScreen = ({navigation}) => {
     return (
-        <SafeAreaView style={styles.container}>
-            <Header />
+        <SafeAreaView style={{
+            flex: 1, 
+            backgroundColor: 'white'
+        }}>
+            <Header navigation={navigation}/>
             
             <ScrollView>
                 <Stories />
@@ -29,12 +34,5 @@ const HomeScreen = () => {
         </SafeAreaView>
     )
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: 'white'
-    }
-})
 
 export default HomeScreen

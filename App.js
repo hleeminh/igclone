@@ -1,10 +1,9 @@
-import { View, Text } from 'react-native'
 import React from 'react'
-import HomeScreen from './screens/HomeScreen';
+import SignedInStack from './navigation';
 
 const App = (props) => {
     return(
-        <HomeScreen/>
+        <SignedInStack/>
     )
 }
 
