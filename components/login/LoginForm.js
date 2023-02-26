@@ -1,10 +1,16 @@
 import { View, Text, TextInput, StyleSheet, Pressable, TouchableOpacity, Alert } from 'react-native'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Divider } from 'react-native-elements'
 import * as Yup from 'yup'
 import { Formik } from 'formik'
 import * as Validator from 'email-validator'
-import firebase from '../../firebase'
+import { firebase, db } from '../../firebase'
+import {
+    auth,
+    signInWithEmailAndPassword,
+    onAuthStateChanged,
+    getFirestore, collection, addDoc, getDocs, setDoc, updateDoc, doc
+} from '../../firebase';
 
 const LoginFormSchema = Yup.object().shape({
     email: Yup.string().email().required('An email is required.'),
@@ -13,15 +19,37 @@ const LoginFormSchema = Yup.object().shape({
         .min(6, 'Your password has to have at least 6 characters.')
 })
 
-const LoginForm = ({navigation}) => {
-    const onLogin = async (email, password) => {
-        try {
-            await firebase.auth().signInWithEmailAndPassword(email, password)
-            console.log('Firebase Login Successfull: ', email, password);
-        }catch(error) {
-            Alert.alert(error.message)
-        }
+const LoginForm = ({ navigation }) => {
+
+    useEffect(() => {
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                navigation.navigate('HomeScreen')
+            }
+          });
+    }, [])
+
+    const onLogin = (email, password) => {
+        signInWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                Alert.alert('User login successfully')
+                navigation.navigate('HomeScreen')
+            })
+            .catch((error) => {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                Alert.alert(errorMessage)
+            });
     }
+
+    // const onLogin = async (email, password) => {
+    //     try {
+    //         await firebase.auth().signInWithEmailAndPassword(email, password)
+    //         console.log('Firebase Login Successfull:', email, password);
+    //     }catch(error) {
+    //         Alert.alert(error.message)
+    //     }
+    // }
 
     return (
         <View style={{ flex: 1 }}>
@@ -35,37 +63,36 @@ const LoginForm = ({navigation}) => {
             >
                 {({ handleBlur, handleChange, handleSubmit, values, errors, isValid }) => (
                     <>
-                        <View 
+                        <View
                             style={[
                                 styles.inputField,
                                 {
                                     borderColor:
                                         values.email.length == 0 || Validator.validate(values.email)
-                                        ? '#e6e6e6'
-                                        : 'red'
+                                            ? '#e6e6e6'
+                                            : 'red'
                                 }
-                            ]}                        
+                            ]}
                         >
                             <TextInput
                                 placeholder='Phone number, username or email'
                                 autoCapitalize='none'
                                 keyboardType='email-address'
                                 textContentType='emailAddress'
-                                autoFocus={true}
                                 style={styles.textInput}
                                 onChangeText={handleChange('email')}
                                 onBlur={handleBlur('email')}
                                 value={values.email}
                             />
                         </View>
-                        <View 
+                        <View
                             style={[
                                 styles.inputField,
                                 {
                                     borderColor:
                                         values.password.length == 0 || values.password.length >= 6
-                                        ? '#e6e6e6'
-                                        : 'red'
+                                            ? '#e6e6e6'
+                                            : 'red'
                                 }
                             ]}
                         >

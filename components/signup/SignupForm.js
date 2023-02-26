@@ -1,67 +1,116 @@
-import { View, Text, TextInput, StyleSheet, Pressable, TouchableOpacity } from 'react-native'
+import { View, Text, TextInput, StyleSheet, Pressable, TouchableOpacity, Alert } from 'react-native'
 import React, { useState } from 'react'
 import { Divider } from 'react-native-elements'
 import * as Yup from 'yup'
 import { Formik } from 'formik'
 import * as Validator from 'email-validator'
+import {
+    auth,
+    db,
+    createUserWithEmailAndPassword,
+    getFirestore, collection, addDoc, getDocs, setDoc, updateDoc, doc
+} from '../../firebase';
 
 const SignupFormSchema = Yup.object().shape({
     email: Yup.string().email().required('An email is required.'),
-    username: Yup.string()
-        .required()
-        .min(2, 'A username is required.'),
+    // username: Yup.string()
+    //     .required()
+    //     .min(2, 'A username is required.'),
     password: Yup.string()
         .required()
         .min(6, 'Your password has to have at least 6 characters.')
 })
 
-const SignupForm = ({navigation}) => {
+const SignupForm = ({ navigation }) => {
+
+    const getRandomProfilePicture = async () => {
+        const response = await fetch('https://randomuser.me/api')
+        const data = await response.json()
+        return data.results[0].picture.large
+    }
+
+    const onSingup = async (email, password) => {
+        createUserWithEmailAndPassword(auth, email, password)
+            .then(async (userCredential) => {
+                // Signed in 
+                Alert.alert('User created successfully')
+                navigation.navigate('LoginScreen')
+                try {
+                    const docRef = await addDoc(collection(db, "users"), {
+                        email: email,                       
+                    });
+                } catch (e) {
+                    console.error("Error adding document: ", e);
+                }
+            })
+            .catch((error) => {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                // ..
+            });
+    }
+
+    // const onSingup = async (email, password, username) => {
+    //     try {
+    //         const authUser = await firebase.auth().createUserWithEmailAndPassword(email, password)
+    //         console.log('Firebase User Created Successfully', email, password);
+
+    //         db.collection('users').add({
+    //             owner_uid: authUser.user.uid,
+    //             username: username,
+    //             email: authUser.user.email,
+    //             profile_picture: await getRandomProfilePicture(),
+
+    //         })
+    //     }catch(error){
+    //         Alert.alert(error.message)
+    //     }
+    // }
 
     return (
         <View style={{ flex: 1 }}>
             <Formik
-                initialValues={{ email: '', username: '', password: '' }}
+                initialValues={{ email: '', password: '' }}
                 onSubmit={values => {
-                    console.log(values);
+                    onSingup(values.email, values.password)
                 }}
                 validationSchema={SignupFormSchema}
                 validateOnMount={true}
             >
                 {({ handleBlur, handleChange, handleSubmit, values, errors, isValid }) => (
                     <>
-                        <View 
+                        <View
                             style={[
                                 styles.inputField,
                                 {
                                     borderColor:
                                         values.email.length == 0 || Validator.validate(values.email)
-                                        ? '#e6e6e6'
-                                        : 'red'
+                                            ? '#e6e6e6'
+                                            : 'red'
                                 }
-                            ]}                        
+                            ]}
                         >
                             <TextInput
                                 placeholder='Email'
                                 autoCapitalize='none'
                                 keyboardType='email-address'
                                 textContentType='emailAddress'
-                                autoFocus={true}
                                 style={styles.textInput}
                                 onChangeText={handleChange('email')}
                                 onBlur={handleBlur('email')}
                                 value={values.email}
                             />
                         </View>
-                        <View 
+                        {/* <View
                             style={[
                                 styles.inputField,
                                 {
                                     borderColor:
-                                        values.username.length == 0 || values.username.length >= 6
-                                        ? '#e6e6e6'
-                                        : 'red'
+                                        values.username.length == 0 || values.username.length >= 2
+                                            ? '#e6e6e6'
+                                            : 'red'
                                 }
-                            ]}                        
+                            ]}
                         >
                             <TextInput
                                 placeholder='Username'
@@ -73,15 +122,15 @@ const SignupForm = ({navigation}) => {
                                 onBlur={handleBlur('username')}
                                 value={values.username}
                             />
-                        </View>
-                        <View 
+                        </View> */}
+                        <View
                             style={[
                                 styles.inputField,
                                 {
                                     borderColor:
                                         values.password.length == 0 || values.password.length >= 2
-                                        ? '#e6e6e6'
-                                        : 'red'
+                                            ? '#e6e6e6'
+                                            : 'red'
                                 }
                             ]}
                         >
