@@ -13,9 +13,9 @@ import {
 
 const SignupFormSchema = Yup.object().shape({
     email: Yup.string().email().required('An email is required.'),
-    // username: Yup.string()
-    //     .required()
-    //     .min(2, 'A username is required.'),
+    username: Yup.string()
+        .required()
+        .min(2, 'A username is required.'),
     password: Yup.string()
         .required()
         .min(6, 'Your password has to have at least 6 characters.')
@@ -29,16 +29,19 @@ const SignupForm = ({ navigation }) => {
         return data.results[0].picture.large
     }
 
-    const onSingup = async (email, password) => {
+    const onSingup = async (email, password, username) => {
         createUserWithEmailAndPassword(auth, email, password)
-            .then(async (userCredential) => {
-                // Signed in 
+            .then(async (userCredential) => {              
                 Alert.alert('User created successfully')
-                navigation.navigate('LoginScreen')
                 try {
                     const docRef = await addDoc(collection(db, "users"), {
-                        email: email,                       
+                        uid: userCredential.user.uid,
+                        username: username,
+                        email: email,
+                        profile_picture: await getRandomProfilePicture(),
+
                     });
+                    
                 } catch (e) {
                     console.error("Error adding document: ", e);
                 }
@@ -50,29 +53,12 @@ const SignupForm = ({ navigation }) => {
             });
     }
 
-    // const onSingup = async (email, password, username) => {
-    //     try {
-    //         const authUser = await firebase.auth().createUserWithEmailAndPassword(email, password)
-    //         console.log('Firebase User Created Successfully', email, password);
-
-    //         db.collection('users').add({
-    //             owner_uid: authUser.user.uid,
-    //             username: username,
-    //             email: authUser.user.email,
-    //             profile_picture: await getRandomProfilePicture(),
-
-    //         })
-    //     }catch(error){
-    //         Alert.alert(error.message)
-    //     }
-    // }
-
     return (
         <View style={{ flex: 1 }}>
             <Formik
-                initialValues={{ email: '', password: '' }}
+                initialValues={{ email: '', password: '' , username: ''}}
                 onSubmit={values => {
-                    onSingup(values.email, values.password)
+                    onSingup(values.email, values.password, values.username)
                 }}
                 validationSchema={SignupFormSchema}
                 validateOnMount={true}
@@ -101,7 +87,7 @@ const SignupForm = ({ navigation }) => {
                                 value={values.email}
                             />
                         </View>
-                        {/* <View
+                        <View
                             style={[
                                 styles.inputField,
                                 {
@@ -122,7 +108,7 @@ const SignupForm = ({ navigation }) => {
                                 onBlur={handleBlur('username')}
                                 value={values.username}
                             />
-                        </View> */}
+                        </View>
                         <View
                             style={[
                                 styles.inputField,

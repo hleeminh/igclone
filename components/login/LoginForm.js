@@ -42,15 +42,6 @@ const LoginForm = ({ navigation }) => {
             });
     }
 
-    // const onLogin = async (email, password) => {
-    //     try {
-    //         await firebase.auth().signInWithEmailAndPassword(email, password)
-    //         console.log('Firebase Login Successfull:', email, password);
-    //     }catch(error) {
-    //         Alert.alert(error.message)
-    //     }
-    // }
-
     return (
         <View style={{ flex: 1 }}>
             <Formik
