@@ -1,26 +1,23 @@
-import { View, Text, Image, StyleSheet, TouchableOpacity, } from 'react-native'
+import { View, Text, Image, StyleSheet, TouchableOpacity, Alert } from 'react-native'
 import React, { useEffect } from 'react'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import {
     auth,
-    signInWithEmailAndPassword,
-    onAuthStateChanged,
     signOut,
-    getFirestore, collection, addDoc, getDocs, setDoc, updateDoc, doc
 } from '../../firebase';
+
+const handleSignout = async () => {
+    await signOut(auth).then(() => {
+        console.log('User signed out successfully!')
+    }).catch((error) => {
+        console.log(error.message)
+    });
+}
 
 const Header = ({ navigation }) => {
 
-    // useEffect(() => {
-        const onLogout = () => {
-            signOut(auth)
-            .then(() => {
-                navigation.navigate('LoginScreen')
-            }).catch((error) => {
-                // An error happened.
-            });
-        }
-    // }, [])
+
+
     return (
         <View style={styles.container}>
             <TouchableOpacity>
@@ -32,7 +29,8 @@ const Header = ({ navigation }) => {
 
             <View style={styles.iconsContainer}>
                 <TouchableOpacity
-                    onPress={() => onLogout()}
+                    // onPress={() => handleSignout()}
+                    onPress={handleSignout}
                 >
                     <Icon
                         name='sign-out'

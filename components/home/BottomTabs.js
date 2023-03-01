@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Divider, Image } from 'react-native-elements'
 
 export const bottomTabIcons = [
@@ -25,14 +25,34 @@ export const bottomTabIcons = [
   },
   {
     name: 'Profile',
-    active: 'https://scontent.fhan2-5.fna.fbcdn.net/v/t39.30808-6/239641824_1730202753831365_2418328791873881218_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=W2aNj_Vl2pAAX_QuEQM&_nc_ht=scontent.fhan2-5.fna&oh=00_AfCOKza5h_7QXk3gKqX5aFoHdrsRr9KjrLArmjw8lra4FA&oe=63F9DF48',
-    inactive: 'https://scontent.fhan2-5.fna.fbcdn.net/v/t39.30808-6/239641824_1730202753831365_2418328791873881218_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=W2aNj_Vl2pAAX_QuEQM&_nc_ht=scontent.fhan2-5.fna&oh=00_AfCOKza5h_7QXk3gKqX5aFoHdrsRr9KjrLArmjw8lra4FA&oe=63F9DF48'
+    active: 'https://scontent.fhan2-5.fna.fbcdn.net/v/t39.30808-6/239641824_1730202753831365_2418328791873881218_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=8Gq7TfluUwUAX9YH1Jk&_nc_ht=scontent.fhan2-5.fna&oh=00_AfBLsjuliicMJCIsEE4nbcvHzqqz-QYwJm9dtnnetuD4FQ&oe=6401C848',
+    inactive: 'https://scontent.fhan2-5.fna.fbcdn.net/v/t39.30808-6/239641824_1730202753831365_2418328791873881218_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=8Gq7TfluUwUAX9YH1Jk&_nc_ht=scontent.fhan2-5.fna&oh=00_AfBLsjuliicMJCIsEE4nbcvHzqqz-QYwJm9dtnnetuD4FQ&oe=6401C848'
   },
 ]
 
-const BottomTabs = ({ icons }) => {
+import {
+  auth,
+  db,
+  getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut,
+  getFirestore, collection, addDoc, getDocs, setDoc, updateDoc, doc, initializeFirestore, 
+  collectionGroup, onSnapshot, where, query, serverTimestamp, arrayUnion, arrayRemove
+} from '../../firebase'
 
+const BottomTabs = ({ icons }) => {
+  
   const [activeTab, setActiveTab] = useState('Home')
+
+  // const auth = getAuth();
+  // const user = auth.currentUser;
+//   const [users, setUsers] = useState([])
+
+//   useEffect(() => {
+//     onSnapshot(collection(db, "users"), (snapshot) => {
+//         setUsers(snapshot.docs.map(user => (
+//             {id: user.id,  ... user.data()}
+//         )))
+//     })
+// }, [])
 
   const Icon = ({ icon }) => (
     <TouchableOpacity onPress={() => setActiveTab(icon.name)}>
@@ -54,9 +74,12 @@ const BottomTabs = ({ icons }) => {
         {icons.map((icon, index) => (
           <Icon key={index} icon={icon} />
         ))}
+        {/* <Image
+          source={{uri: user.profile_picture}}
+          style={styles.icon}
+        /> */}
       </View>
     </View>
-
   )
 }
 

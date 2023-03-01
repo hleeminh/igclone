@@ -1,26 +1,45 @@
 import { View, Text, ScrollView, Image, StyleSheet, TouchableOpacity, Alert } from 'react-native'
-import React from 'react'
+import React, {useState, useEffect} from 'react'
 import { USERS } from '../../data/users'
+import {
+  auth,
+  db,
+  getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut,
+  getFirestore, collection, addDoc, getDocs, setDoc, updateDoc, doc, initializeFirestore, 
+  collectionGroup, onSnapshot, where, query, serverTimestamp, arrayUnion, arrayRemove
+} from '../../firebase'
+
 
 const Stories = () => {
+
+  const [users, setUsers] = useState([])
+
+  useEffect(() => {
+      onSnapshot(collection(db, "users"), (snapshot) => {
+          setUsers(snapshot.docs.map(user => (
+              {id: user.id,  ... user.data()}
+          )))
+      })
+  }, [])
+
   return (
     <View style={{ marginBottom: 13 }}>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
       >
-        {USERS.map((story, index) => {
+        {users.map((user, index) => {
           return (
             <TouchableOpacity
               key={index}
               style={{alignItems: 'center', marginHorizontal: 8 }} 
               onPress={() => {
-                alert(`${story.user}`)
+                alert(`${user.username}`)
               }}           
             >
               <View style={styles.storyCover}>
                 <Image
-                  source={{ uri: story.image }}
+                  source={{ uri: user.profile_picture}}
                   style={styles.storyImage}
                 />
               </View>
@@ -28,8 +47,8 @@ const Stories = () => {
                 style={{color: 'black', fontSize: 12}}
               >
                 {
-                  story.user.length > 11 ? story.user.slice(0, 10).toLowerCase() + '...' 
-                  : story.user.toLowerCase()
+                  user.username.length > 11 ? user.username.slice(0, 10).toLowerCase() + '...' 
+                  : user.username.toLowerCase()
                 }
               </Text>
             </TouchableOpacity>            

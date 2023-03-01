@@ -7,8 +7,8 @@ import * as Validator from 'email-validator'
 import {
     auth,
     db,
-    createUserWithEmailAndPassword,
-    getFirestore, collection, addDoc, getDocs, setDoc, updateDoc, doc
+    getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut,
+    getFirestore, collection, addDoc, getDocs, setDoc, updateDoc, doc, initializeFirestore, collectionGroup, onSnapshot
 } from '../../firebase';
 
 const SignupFormSchema = Yup.object().shape({
@@ -30,16 +30,15 @@ const SignupForm = ({ navigation }) => {
     }
 
     const onSingup = async (email, password, username) => {
-        createUserWithEmailAndPassword(auth, email, password)
+        await createUserWithEmailAndPassword(auth, email, password)
             .then(async (userCredential) => {              
-                Alert.alert('User created successfully')
+                console.log('User created successfully', email, password);
                 try {
-                    const docRef = await addDoc(collection(db, "users"), {
-                        uid: userCredential.user.uid,
+                    const docRef = await setDoc(doc(db, "users", email), {
+                        userId: userCredential.user.uid,
                         username: username,
                         email: email,
                         profile_picture: await getRandomProfilePicture(),
-
                     });
                     
                 } catch (e) {
@@ -49,7 +48,7 @@ const SignupForm = ({ navigation }) => {
             .catch((error) => {
                 const errorCode = error.code;
                 const errorMessage = error.message;
-                // ..
+                console.log(errorMessage);
             });
     }
 

@@ -4,12 +4,10 @@ import { Divider } from 'react-native-elements'
 import * as Yup from 'yup'
 import { Formik } from 'formik'
 import * as Validator from 'email-validator'
-import { firebase, db } from '../../firebase'
 import {
     auth,
     signInWithEmailAndPassword,
-    onAuthStateChanged,
-    getFirestore, collection, addDoc, getDocs, setDoc, updateDoc, doc
+
 } from '../../firebase';
 
 const LoginFormSchema = Yup.object().shape({
@@ -21,24 +19,15 @@ const LoginFormSchema = Yup.object().shape({
 
 const LoginForm = ({ navigation }) => {
 
-    useEffect(() => {
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                navigation.navigate('HomeScreen')
-            }
-          });
-    }, [])
-
-    const onLogin = (email, password) => {
-        signInWithEmailAndPassword(auth, email, password)
+    const onLogin = async (email, password) => {
+        await signInWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
-                Alert.alert('User login successfully')
-                navigation.navigate('HomeScreen')
+                console.log('User login successfully', email, password);
             })
             .catch((error) => {
                 const errorCode = error.code;
                 const errorMessage = error.message;
-                Alert.alert(errorMessage)
+                console.log(errorMessage)
             });
     }
 

@@ -1,6 +1,11 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
-import { getFirestore, collection, addDoc, getDocs, setDoc, updateDoc, doc, initializeFirestore  } from "firebase/firestore";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+  onAuthStateChanged, signOut} from "firebase/auth";
+import { getFirestore, collection, addDoc, getDocs, setDoc, updateDoc, 
+  doc, initializeFirestore, collectionGroup, onSnapshot, where, query, 
+  serverTimestamp, arrayUnion, arrayRemove, orderBy
+} from "firebase/firestore";
+
 
 const firebaseConfig = {
   apiKey: "AIzaSyAsJmPtYX8dEeWVERtjI8K7nVA-yH_4O6c",
@@ -18,12 +23,12 @@ const auth = getAuth(app);
 const db = initializeFirestore(app, {
   experimentalForceLongPolling: true
   })
+
 export {
   auth,
   db,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  onAuthStateChanged,
-  signOut,
-  getFirestore, collection, addDoc, getDocs, setDoc, updateDoc, doc   
+  getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut,
+  getFirestore, collection, addDoc, getDocs, setDoc, updateDoc, doc, initializeFirestore, 
+  collectionGroup, onSnapshot, where, query, serverTimestamp, arrayUnion, arrayRemove, orderBy
 }
+

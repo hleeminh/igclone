@@ -6,7 +6,6 @@ const NewPostScreen = ({navigation, route}) => {
   return (
     <SafeAreaView style={{flex:1, backgroundColor: 'white'}}>
         <AddNewPost navigation={navigation}/>
-        <Text>{route.params.name}</Text>
     </SafeAreaView>
   )
 }

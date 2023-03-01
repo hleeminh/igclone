@@ -1,14 +1,34 @@
 import { View, Text, SafeAreaView, StyleSheet, ScrollView } from 'react-native'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Header from '../components/home/Header'
 import Stories from '../components/home/Stories'
 import Post from '../components/home/Post'
-import { POSTS } from '../data/posts'
 import BottomTabs from '../components/home/BottomTabs'
 import { bottomTabIcons } from '../components/home/BottomTabs'
 
+import {
+    auth,
+    db,
+    getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut,
+    getFirestore, collection, addDoc, getDocs, setDoc, updateDoc, doc, initializeFirestore, 
+    collectionGroup, onSnapshot, where, query, serverTimestamp, arrayUnion, arrayRemove
+} from '../firebase';
+
 
 const HomeScreen = ({navigation}) => {
+    const [posts, setPosts] = useState([])
+    
+
+    useEffect(() => {
+        onSnapshot(collectionGroup(db, "posts"), (snapshot) => {
+            setPosts(snapshot.docs.map(post => (
+                {id: post.id,  ... post.data()}
+            )))
+        })       
+    }, [])
+
+
+
     return (
         <SafeAreaView style={{
             flex: 1, 
@@ -18,7 +38,7 @@ const HomeScreen = ({navigation}) => {
             
             <ScrollView>
                 <Stories />
-                {POSTS.map((post, index) => {
+                {posts.map((post, index) => {
                     return(
                         <Post 
                             key={index}
@@ -28,7 +48,12 @@ const HomeScreen = ({navigation}) => {
                 })}
                 
             </ScrollView>
-            <BottomTabs icons={bottomTabIcons}/>
+
+                    <BottomTabs 
+                        icons={bottomTabIcons}
+                    />
+
+            
 
             
         </SafeAreaView>
