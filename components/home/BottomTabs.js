@@ -23,11 +23,6 @@ export const bottomTabIcons = [
     active: 'https://img.icons8.com/ios-filled/60/fffffff/instagram-reel.png',
     inactive: 'https://img.icons8.com/ios/60/fffffff/instagram-reel.png'
   },
-  {
-    name: 'Profile',
-    active: 'https://scontent.fhan2-5.fna.fbcdn.net/v/t39.30808-6/239641824_1730202753831365_2418328791873881218_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=8Gq7TfluUwUAX9YH1Jk&_nc_ht=scontent.fhan2-5.fna&oh=00_AfBLsjuliicMJCIsEE4nbcvHzqqz-QYwJm9dtnnetuD4FQ&oe=6401C848',
-    inactive: 'https://scontent.fhan2-5.fna.fbcdn.net/v/t39.30808-6/239641824_1730202753831365_2418328791873881218_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=8Gq7TfluUwUAX9YH1Jk&_nc_ht=scontent.fhan2-5.fna&oh=00_AfBLsjuliicMJCIsEE4nbcvHzqqz-QYwJm9dtnnetuD4FQ&oe=6401C848'
-  },
 ]
 
 import {
@@ -42,27 +37,22 @@ const BottomTabs = ({ icons }) => {
   
   const [activeTab, setActiveTab] = useState('Home')
 
-  // const auth = getAuth();
-  // const user = auth.currentUser;
-//   const [users, setUsers] = useState([])
+  const auth = getAuth();
+  const user = auth.currentUser;
+  const [userLoggedin, setUserLoggedin] = useState(null)
 
-//   useEffect(() => {
-//     onSnapshot(collection(db, "users"), (snapshot) => {
-//         setUsers(snapshot.docs.map(user => (
-//             {id: user.id,  ... user.data()}
-//         )))
-//     })
-// }, [])
+  useEffect(() => {
+    onSnapshot(doc(db, "users", user.email), (doc) => {
+      const currentUserPic = doc.data().profile_picture
+      setUserLoggedin(currentUserPic)
+    })
+}, [])
 
   const Icon = ({ icon }) => (
     <TouchableOpacity onPress={() => setActiveTab(icon.name)}>
       <Image
         source={{ uri: activeTab === icon.name ? icon.active : icon.inactive }}
-        style={[
-          styles.icon,
-          icon.name === 'Profile' ? styles.profilePic() : null,
-          activeTab == 'Profile' && icon.name === activeTab ? styles.profilePic(activeTab): null
-        ]}
+        style={styles.icon}
       />
     </TouchableOpacity>
   )
@@ -74,10 +64,14 @@ const BottomTabs = ({ icons }) => {
         {icons.map((icon, index) => (
           <Icon key={index} icon={icon} />
         ))}
-        {/* <Image
-          source={{uri: user.profile_picture}}
-          style={styles.icon}
-        /> */}
+        <Image
+          source={{uri: userLoggedin}}
+          style={{
+            borderRadius: 15,
+            width: 30, 
+            height: 30
+          }}
+        />
       </View>
     </View>
   )
